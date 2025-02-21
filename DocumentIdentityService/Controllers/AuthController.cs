@@ -69,7 +69,7 @@ namespace DocumentIdentityService.Controllers
 
             return result;
         }
-        [HttpGet("GetFamilyMember")]
+        [HttpGet("GetFamilyMember/{FamilyID:int}")]
         public async Task<ActionResult<Family>> GetFamilyMember(int FamilyID)
         {
             var result = await _authService.GetFamilyMember(FamilyID);
