@@ -1,5 +1,7 @@
 ﻿using DocumentIdentityService.Models;
+using DocumentIdentityService.Models.Dtos;
 using DocumentIdentityService.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +51,7 @@ namespace DocumentIdentityService.Controllers
             }
             return BadRequest("Something went wrong!");
         }
+        [Authorize(Roles = "ADMIN")]
         [HttpPost("AddMemberas")]
         public async Task<ActionResult<bool>> AddMemberas([FromBody] AddMember addMember,string AdminID)
         {
@@ -62,6 +65,7 @@ namespace DocumentIdentityService.Controllers
                 return false;
             }   
         }
+        [Authorize(Roles = "ADMIN")]
         [HttpGet("EnsureRoleCreated")]
         public async Task<ActionResult<bool>> EnsureRoleCreated()
         {
@@ -69,11 +73,23 @@ namespace DocumentIdentityService.Controllers
 
             return result;
         }
+        [Authorize(Roles = "ADMIN")]
         [HttpGet("GetFamilyMember/{FamilyID:int}")]
         public async Task<ActionResult<Family>> GetFamilyMember(int FamilyID)
         {
-            var result = await _authService.GetFamilyMember(FamilyID);
+            var result = await _authService.GetFamilyMembers(FamilyID);
             if(result!=null)
+            {
+                return Ok(result);
+            }
+            return BadRequest("Something went wrong");
+        }
+        [Authorize(Roles = "MEMBER")]
+        [HttpGet("GetUserByEmail")]
+        public async Task<ActionResult<UserDto>> GetMemberByEmail(string email)
+        {
+            var result = await _authService.GetMemberByEmail(email);
+            if (result != null)
             {
                 return Ok(result);
             }

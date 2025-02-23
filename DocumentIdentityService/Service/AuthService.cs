@@ -170,7 +170,7 @@ namespace DocumentIdentityService.Service
             }
         }
 
-        public async Task<Family> GetFamilyMember(int familyID)
+        public async Task<Family> GetFamilyMembers(int familyID)
         {
             if(familyID < 0 || familyID>int.MaxValue)
             {
@@ -186,6 +186,16 @@ namespace DocumentIdentityService.Service
                 return SearchFamily;
             }
             throw new ArgumentException(nameof(Family), "Family list id null");
+        }
+        public async Task<UserDto> GetMemberByEmail(string email)
+        {
+            var isUserExists = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email.ToUpper() == email.ToUpper());
+            if(isUserExists != null)
+            {
+                var userDto = _mapper.Map<UserDto>(isUserExists); 
+                return userDto;
+            }
+            return null;
         }
     }
 }
