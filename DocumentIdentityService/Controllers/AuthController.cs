@@ -68,7 +68,7 @@ namespace DocumentIdentityService.Controllers
         [Authorize(Roles = "ADMIN")]
         [HttpGet("EnsureRoleCreated")]
         public async Task<ActionResult<bool>> EnsureRoleCreated()
-        {
+        { 
            var result =  await _authService.EnsureRoleCreateRole();
 
             return result;
