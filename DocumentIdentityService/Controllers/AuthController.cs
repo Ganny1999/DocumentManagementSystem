@@ -113,6 +113,5 @@ namespace DocumentIdentityService.Controllers
             }
             return BadRequest("Something went wrong");
         }
-        // testing 1
     }
 }
