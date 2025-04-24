@@ -100,7 +100,6 @@ namespace DocumentIdentityService.Service
             }
             return false;
         }
-
         public string Generatoken(LoginUser loginUser)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Token:Key").Value));
