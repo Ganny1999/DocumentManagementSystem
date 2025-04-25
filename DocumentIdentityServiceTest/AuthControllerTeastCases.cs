@@ -1,5 +1,6 @@
 ﻿using DocumentIdentityService.Controllers;
 using DocumentIdentityService.Models;
+using DocumentIdentityService.Models.Dtos;
 using DocumentIdentityService.Service;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -130,6 +131,32 @@ namespace DocumentIdentityServiceTest
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
             Assert.Equal(false, okResult.Value);
+        }
+        [Fact]
+        public async void Get_Member_By_Email_Test_Success()
+        {
+            var email = "test@gmail.com";
+            var user = new UserDto()
+            {
+                Email = email,
+                Contact = "1234567890",
+                FirstName = "Test Name",
+                LastName = "Test Lst"
+                
+            };
+            _authService.Setup(u => u.GetMemberByEmail(email)).ReturnsAsync(user);
+
+            var result = await _controller.GetMemberByEmail(email);
+
+            //var actionResult = Assert.IsType<ActionResult<UserDto>>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnValue = Assert.IsType<UserDto>(okResult.Value);
+            
+            // Assert
+            Assert.Equal(user.Email, returnValue.Email);
+            Assert.Equal(user.FirstName, returnValue.FirstName);
+            Assert.Equal(user.Contact, returnValue.Contact);
+            Assert.Equal(user.LastName, returnValue.LastName);
         }
     }
 }
