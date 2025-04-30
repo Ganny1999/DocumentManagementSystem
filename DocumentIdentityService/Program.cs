@@ -20,6 +20,15 @@ builder.Services.AddDbContext<AppDbContext>(options=>
 // Added service for AutoMapper.
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
+// Session service registration
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(option =>
+{
+    option.IdleTimeout = TimeSpan.FromSeconds(60);
+    option.Cookie.HttpOnly = true;
+    option.Cookie.IsEssential = true;
+});
+
 // register services for Authentication.
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
@@ -58,6 +67,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+// Enable middleware
+
+app.UseSession(); // Add this BEFORE app.UseAuthorization()
 
 app.UseHttpsRedirection();
 

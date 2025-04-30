@@ -3,8 +3,10 @@ using DocumentIdentityService.Models.Dtos;
 using DocumentIdentityService.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Collections;
 
 
@@ -44,18 +46,11 @@ namespace DocumentIdentityService.Controllers
             {
                 var isLoginSuccess = await _authService.LoginUser(loginUser);
 
-                //Session - Storing small user-specific data across multiple requests.
-                //HttpContext.Session.SetString("token-key", isLoginSuccess);
-                //HttpContext.Session.SetString("login-user", JsonConvert.SerializeObject(loginUser));
+                // Session - Storing small user-specific data across multiple requests.
+                HttpContext.Session.SetString("token-key", isLoginSuccess);
+                HttpContext.Session.SetString("login-user", JsonConvert.SerializeObject(loginUser));
 
-                Stack stk = new Stack(); 
-                stk.Push("str1");
-                stk.Push("str2");
-                stk.Push("str3");
-                stk.Push("str4");
-
-                stk.Pop();
-                //var str = HttpContext.Session.GetString("token-key");
+                var str = HttpContext.Session.GetString("token-key");
 
                 if (isLoginSuccess!=null)
                 {
@@ -81,7 +76,7 @@ namespace DocumentIdentityService.Controllers
             else
             {
                 return Ok(false);
-            }   
+            } 
         }
         [Authorize(Roles = "ADMIN")]
         [HttpGet("EnsureRoleCreated")]
@@ -95,24 +90,34 @@ namespace DocumentIdentityService.Controllers
         [HttpGet("GetFamilyMember/{FamilyID:int}")]
         public async Task<ActionResult<Family>> GetFamilyMember(int FamilyID)
         {
+            // Get the logged in user details and compre with Family Admin user, if maches then return the Family member details
+            var user = HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.Email);
             var result = await _authService.GetFamilyMembers(FamilyID);
-            if(result!=null)
+            if(result!=null && result.AdminUser.Email == user.Value)
             {
                 return Ok(result);
             }
             return BadRequest("Something went wrong");
         }
-        [Authorize(Roles = "MEMBER")]
-        [HttpGet("GetUserByEmail")]
+        [Authorize(Roles = "MEMBER,ADMIN")]
+        [HttpGet("GetUserByEmail/{email}")]
         public async Task<ActionResult<UserDto>> GetMemberByEmail(string email)
         {
+            // Only Logged in member can able fetch his own details
+            var user = HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.Email); 
             var result = await _authService.GetMemberByEmail(email);
-            if (result != null)
+            if (result != null && result.Email == user.Value)
             {
                 return Ok(result);
             }
             return BadRequest("Something went wrong");
         }
         // Chaneg from remote
+        [HttpGet("Logout")]
+        public ActionResult<string> LoggedOut()
+        {
+            HttpContext.Session.Clear();
+            return Ok("Logout successful.");
+        }
     }
 }
