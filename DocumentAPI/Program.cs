@@ -16,7 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options=>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"));
 });
 
-//
+// Cache
 builder.Services.AddMemoryCache();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -53,7 +53,7 @@ app.MapPut("PutDoc", (int DocID, Documents doc) =>
     return Results.Ok(docFound);
 });
 
-
+ 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

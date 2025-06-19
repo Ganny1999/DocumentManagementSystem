@@ -191,7 +191,8 @@ namespace DocumentIdentityService.Service
             var isUserExists = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email.ToUpper() == email.ToUpper());
             if(isUserExists != null)
             {
-                var userDto = _mapper.Map<UserDto>(isUserExists); 
+                var userDto = _mapper.Map<UserDto>(isUserExists);
+                userDto.UserID = isUserExists.Id;
                 return userDto;
             }
             return null;
