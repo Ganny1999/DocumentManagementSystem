@@ -38,6 +38,18 @@ namespace DocumentAPI.Controllers
             // if cache is expire or empty, API call reaches to DB.
             return documents;
         }
+        [HttpGet("GetDocumentByName/{DocumentName}")]
+        public async Task<ActionResult<Documents>> GetDocumentByNAme(string DocumentName)
+        {
+            if(DocumentName!= null)
+            {
+                var isDocExists = await _context.Document.FirstOrDefaultAsync(u => u.DocumentTitle == DocumentName);
+                if(isDocExists != null) {
+                    return Ok(isDocExists);
+                }
+            }
+            return NoContent();
+        }
         [HttpPost("AddDocument")]
         public ActionResult<Documents> AddDocument([FromBody] Documents documents)
         {   

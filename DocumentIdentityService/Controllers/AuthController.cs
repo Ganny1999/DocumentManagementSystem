@@ -99,9 +99,9 @@ namespace DocumentIdentityService.Controllers
             }
             return BadRequest("Something went wrong");
         }
-        [Authorize(Roles = "MEMBER,ADMIN")]
+        //[Authorize(Roles = "MEMBER,ADMIN")] // MS-UserDoc is not working this line 
         [HttpGet("GetUserByEmail/{email}")]
-        public async Task<ActionResult<UserDto>> GetMemberByEmail(string email)
+        public async Task<ActionResult<UserDto>> GetUserByEmail(string email)
         {
             // Only Logged in member can able fetch his own details
             var user = HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.Email); 
